@@ -1,0 +1,81 @@
+#include <Servo.h>
+
+Servo myServo;
+
+// Flame sensor pins
+int flameLeft   = 2;
+int flameCenter = 3;
+int flameRight  = 4;
+
+// Relay pin
+int relayPin = 8;
+
+void setup() {
+
+  pinMode(flameLeft, INPUT);
+  pinMode(flameCenter, INPUT);
+  pinMode(flameRight, INPUT);
+
+  pinMode(relayPin, OUTPUT);
+
+  digitalWrite(relayPin, LOW);
+
+  myServo.attach(9);
+
+  myServo.write(90); // center position
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  int leftValue   = digitalRead(flameLeft);
+  int centerValue = digitalRead(flameCenter);
+  int rightValue  = digitalRead(flameRight);
+
+  Serial.print(leftValue);
+  Serial.print(" ");
+  Serial.print(centerValue);
+  Serial.print(" ");
+  Serial.println(rightValue);
+
+  // Fire detected on LEFT
+  if (leftValue == LOW) {
+
+    Serial.println("Fire Left");
+
+    myServo.write(40);
+
+    digitalWrite(relayPin, HIGH); // pump ON
+  }
+
+  // Fire detected at CENTER
+  else if (centerValue == LOW) {
+
+    Serial.println("Fire Center");
+
+    myServo.write(90);
+
+    digitalWrite(relayPin, HIGH);
+  }
+
+  // Fire detected on RIGHT
+  else if (rightValue == LOW) {
+
+    Serial.println("Fire Right");
+
+    myServo.write(140);
+
+    digitalWrite(relayPin, HIGH);
+  }
+
+  // No fire
+  else {
+
+    digitalWrite(relayPin, LOW); // pump OFF
+
+    myServo.write(90);
+  }
+
+  delay(200);
+}
